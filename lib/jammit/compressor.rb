@@ -28,9 +28,10 @@ module Jammit
     MAX_IMAGE_SIZE  = 32700
 
     # CSS asset-embedding regexes for URL rewriting.
-    EMBED_DETECTOR  = /url\(['"]?([^\s)]+\.[a-z]+)(\?\d+)?['"]?\)/
-    EMBEDDABLE      = /[\A\/]embed\//
-    EMBED_REPLACER  = /url\(__EMBED__(.+?)(\?\d+)?\)/
+    CHARSET_DETECTOR = /@charset.*;/
+    EMBED_DETECTOR   = /url\(['"]?([^\s)]+\.[a-z]+)(\?\d+)?['"]?\)/
+    EMBEDDABLE       = /[\A\/]embed\//
+    EMBED_REPLACER   = /url\(__EMBED__(.+?)(\?\d+)?\)/
 
     # MHTML file constants.
     MHTML_START     = "/*\r\nContent-Type: multipart/related; boundary=\"MHTML_MARK\"\r\n\r\n"
@@ -143,6 +144,7 @@ module Jammit
           is_url = URI.parse($1).absolute?
           is_url ? url : "url(#{construct_asset_path(ipath, cpath, variant)})"
         end
+        contents.gsub(CHARSET_DETECTOR, '') if Jammit.remove_css_charset
       end
       stylesheets.join("\n")
     end
